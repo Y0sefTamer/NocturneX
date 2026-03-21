@@ -1,47 +1,73 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../../context/Web3Context';
-import { parseUnits } from 'ethers';
+import { parseUnits, Contract } from 'ethers';
 import toast from 'react-hot-toast';
+import { CONTRACT_ADDRESS, ERC20_ABI, MOCK_USDC, MOCK_WETH } from '../../utils/constants';
 
 const CreateIntentForm = () => {
-  const { contract, account } = useWeb3();
-  const [loading, setLoading] = useState(false);
+  const { contract, account, signer } = useWeb3();
+  const [loadingText, setLoadingText] = useState('');
   const [formData, setFormData] = useState({
-    tokenIn: 'USDC',
+    tokenIn: MOCK_USDC,
     amountIn: '',
-    tokenOut: 'WETH',
+    tokenOut: MOCK_WETH,
     amountOut: '',
     deadline: '100'
   });
 
-  const mockAddresses = {
-    USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    USDT: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    WETH: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    WBTC: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+  const getDecimals = (address) => {
+    if (!address) return 18;
+    if (address.toLowerCase() === MOCK_USDC.toLowerCase()) return 6;
+    if (address.toLowerCase() === "0xdac17f958d2ee523a2206206994597c13d831ec7") return 6; // USDT
+    if (address.toLowerCase() === "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599") return 8; // WBTC
+    return 18; // Default to 18 for WETH & others
   };
 
-  const decimals = { USDC: 6, USDT: 6, WETH: 18, WBTC: 8 };
-
   const handleCreate = async () => {
-    if (!account || !contract) return toast.error("Please connect wallet first");
+    if (!account || !contract || !signer) return toast.error("Please connect wallet first");
     if (!formData.amountIn || !formData.amountOut) return toast.error("Please fill all amounts");
-
-    setLoading(true);
-    const toastId = toast.loading("Confirming transaction...");
     
+    setLoadingText("Checking Network...");
+    const toastId = toast.loading("Checking Network...");
+
     try {
-      const parsedAmountIn = parseUnits(formData.amountIn, decimals[formData.tokenIn]);
-      const parsedAmountOut = parseUnits(formData.amountOut, decimals[formData.tokenOut]);
+      if (typeof window.ethereum !== 'undefined') {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        if (chainId !== '0xa869' && parseInt(chainId, 16) !== 43113) {
+          setLoadingText("Switching Network...");
+          toast.loading("Switching to Avalanche Fuji...", { id: toastId });
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0xa869' }],
+          });
+        }
+      }
+
+      setLoadingText("Approving Tokens...");
+      toast.loading("Approving Tokens...", { id: toastId });
+
+      const parsedAmountIn = parseUnits(formData.amountIn.toString(), 18);
+      const parsedAmountOut = parseUnits(formData.amountOut.toString(), 18);
+      const deadline = Math.floor(Date.now() / 1000) + (parseInt(formData.deadline) * 60);
       
+      const tokenInAddress = formData.tokenIn;
+      const tokenInContract = new Contract(tokenInAddress, ERC20_ABI, signer);
+
+      const approveTx = await tokenInContract.approve(CONTRACT_ADDRESS, parsedAmountIn);
+      await approveTx.wait();
+
+      setLoadingText("Creating Intent...");
+      toast.loading("Creating Intent...", { id: toastId });
+
       const tx = await contract.createIntent(
-        mockAddresses[formData.tokenIn],
+        tokenInAddress,
         parsedAmountIn,
-        mockAddresses[formData.tokenOut],
+        formData.tokenOut,
         parsedAmountOut,
-        Number(formData.deadline)
+        deadline
       );
       
+      setLoadingText("Mining...");
       toast.loading("Mining...", { id: toastId });
       await tx.wait();
       toast.success("Intent Created Successfully!", { id: toastId });
@@ -50,7 +76,7 @@ const CreateIntentForm = () => {
       console.error(err);
       toast.error("Transaction failed or rejected", { id: toastId });
     } finally {
-      setLoading(false);
+      setLoadingText("");
     }
   };
 
@@ -65,17 +91,13 @@ const CreateIntentForm = () => {
           {/* Token In */}
           <div className="flex gap-4">
             <div className="w-1/3 space-y-1.5">
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sell Asset</label>
-              <select 
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sell Asset Address</label>
+              <input 
+                type="text" 
                 value={formData.tokenIn}
                 onChange={(e) => setFormData({...formData, tokenIn: e.target.value})}
-                className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-gray-600 appearance-none font-mono cursor-pointer"
-              >
-                <option>USDC</option>
-                <option>USDT</option>
-                <option>WETH</option>
-                <option>WBTC</option>
-              </select>
+                className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-gray-600 font-mono"
+              />
             </div>
             <div className="flex-1 space-y-1.5">
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Amount</label>
@@ -102,17 +124,13 @@ const CreateIntentForm = () => {
           {/* Token Out */}
           <div className="flex gap-4">
             <div className="w-1/3 space-y-1.5">
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Buy Asset</label>
-              <select 
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Buy Asset Address</label>
+              <input 
+                type="text" 
                 value={formData.tokenOut}
                 onChange={(e) => setFormData({...formData, tokenOut: e.target.value})}
-                className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-gray-600 appearance-none font-mono cursor-pointer"
-              >
-                <option>WETH</option>
-                <option>USDC</option>
-                <option>USDT</option>
-                <option>WBTC</option>
-              </select>
+                className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-gray-600 font-mono"
+              />
             </div>
             <div className="flex-1 space-y-1.5">
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Receive Amount</label>
@@ -140,10 +158,10 @@ const CreateIntentForm = () => {
           <div className="pt-6">
             <button 
               onClick={handleCreate}
-              disabled={loading}
+              disabled={!!loadingText}
               className="bg-gray-100 disabled:bg-gray-500 hover:bg-white text-gray-900 text-sm font-bold py-2.5 px-6 rounded shadow-sm transition-colors uppercase tracking-wider w-full"
             >
-              {loading ? 'Mining...' : 'Sign & Broadcast Intent'}
+              {loadingText || 'Sign & Broadcast Intent'}
             </button>
           </div>
 

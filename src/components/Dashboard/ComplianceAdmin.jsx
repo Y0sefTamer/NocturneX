@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../../context/Web3Context';
 import toast from 'react-hot-toast';
 
@@ -12,6 +12,22 @@ const ComplianceAdmin = () => {
   const { contract, account } = useWeb3();
   const [addressInput, setAddressInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isWhitelisted, setIsWhitelisted] = useState(false);
+
+  const checkWhitelist = async () => {
+    if (contract && account) {
+      try {
+        const status = await contract.isWhitelisted(account);
+        setIsWhitelisted(status);
+      } catch (err) {
+        console.error("Error fetching whitelist status:", err);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkWhitelist();
+  }, [contract, account]);
 
   const handleWhitelist = async () => {
     if (!account || !contract) return toast.error("Connect wallet as admin");
@@ -26,6 +42,7 @@ const ComplianceAdmin = () => {
       await tx.wait();
       toast.success("Institution Whitelisted!", { id: toastId });
       setAddressInput('');
+      checkWhitelist();
     } catch (err) {
       console.error(err);
       toast.error("Whitelist failed", { id: toastId });
@@ -36,6 +53,12 @@ const ComplianceAdmin = () => {
 
   return (
     <div className="h-full flex flex-col bg-gray-900">
+      {/* Admin Status */}
+      <div className="px-5 py-3 border-b border-gray-800 bg-blue-900/20 text-sm font-medium text-blue-200 flex justify-between">
+        <span>Your Address: {account || 'Not connected'}</span>
+        <span>Status: {isWhitelisted ? <span className="text-green-400">Verified</span> : <span className="text-gray-400">Not Verified</span>}</span>
+      </div>
+
       {/* Whitelist Form */}
       <div className="p-5 border-b border-gray-800 bg-gray-900/50 shrink-0">
         <h3 className="text-sm uppercase tracking-wider font-bold text-gray-400 mb-4">Add Institution</h3>
