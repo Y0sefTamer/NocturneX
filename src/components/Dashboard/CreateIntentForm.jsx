@@ -2,78 +2,78 @@ import React from 'react';
 
 const CreateIntentForm = () => {
   return (
-    <div className="max-w-2xl mx-auto h-full flex flex-col">
-      <div className="mb-8">
-        <h3 className="text-2xl font-bold text-white mb-2">Create New Intent</h3>
-        <p className="text-gray-400">Configure parameters for your OTC trade intent. It will be submitted to the intent pool.</p>
+    <div className="h-full flex flex-col bg-gray-900">
+      <div className="px-5 py-4 border-b border-gray-800 bg-gray-900 shrink-0">
+        <h3 className="text-sm uppercase tracking-wider font-bold text-gray-400">Create Trade Intent</h3>
       </div>
 
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
-        <div className="space-y-6">
-          
+      <div className="flex-1 p-6 overflow-auto">
+        <div className="max-w-xl space-y-5">
           {/* Token In */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">Token In</label>
-              <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
+          <div className="flex gap-4">
+            <div className="w-1/3 space-y-1.5">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sell Asset</label>
+              <select className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-gray-600 appearance-none font-mono cursor-pointer">
                 <option>USDC</option>
                 <option>USDT</option>
                 <option>WETH</option>
                 <option>WBTC</option>
               </select>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">Amount In</label>
+            <div className="flex-1 space-y-1.5">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Amount</label>
               <input 
                 type="text" 
                 placeholder="0.00" 
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-mono text-lg"
+                className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-gray-600 font-mono"
               />
             </div>
           </div>
 
-          <div className="flex justify-center -my-3 relative z-10">
-            <div className="w-10 h-10 bg-gray-800 border border-gray-700 rounded-full flex items-center justify-center text-gray-400 shadow-sm">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div className="flex items-center gap-4">
+            <div className="h-px bg-gray-800 flex-1"></div>
+            <div className="w-6 h-6 border border-gray-800 rounded bg-gray-950 flex items-center justify-center text-gray-500 shrink-0 shadow-sm">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 5v14M19 12l-7 7-7-7"/>
               </svg>
             </div>
+            <div className="h-px bg-gray-800 flex-1"></div>
           </div>
 
           {/* Token Out */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">Token Out</label>
-              <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
+          <div className="flex gap-4">
+            <div className="w-1/3 space-y-1.5">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Buy Asset</label>
+              <select className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-gray-600 appearance-none font-mono cursor-pointer">
                 <option>WETH</option>
                 <option>USDC</option>
                 <option>USDT</option>
                 <option>WBTC</option>
               </select>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">Receive Amount</label>
+            <div className="flex-1 space-y-1.5">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Receive Amount</label>
               <input 
                 type="text" 
                 placeholder="0.00" 
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-mono text-lg"
+                className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-gray-600 font-mono"
               />
             </div>
           </div>
 
-          <div className="space-y-2 pt-2">
-            <label className="text-sm font-medium text-gray-400">Deadline (Blocks)</label>
+          <div className="space-y-1.5 pt-2">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Deadline (Blocks)</label>
             <input 
               type="text" 
               placeholder="e.g. 50" 
               defaultValue="100"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-mono"
+              className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-gray-600 font-mono"
             />
           </div>
 
-          <div className="pt-4">
-            <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-4 rounded-lg shadow-[0_0_15px_rgba(37,99,235,0.2)] transition-all flex justify-center items-center gap-2">
-              Sign & Submit Intent
+          <div className="pt-6">
+            <button className="bg-gray-100 hover:bg-white text-gray-900 text-sm font-bold py-2.5 px-6 rounded shadow-sm transition-colors uppercase tracking-wider w-full">
+              Sign & Broadcast Intent
             </button>
           </div>
 
