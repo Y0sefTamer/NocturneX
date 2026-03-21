@@ -1,11 +1,18 @@
 import React from 'react';
+import { useWeb3 } from '../../context/Web3Context';
+import { ADMIN_WALLET } from '../../utils/constants';
 
 const Sidebar = ({ activeView, setActiveView }) => {
+  const { account } = useWeb3();
+
   const navItems = [
     { id: 'book', label: 'Dashboard (Order Book)', icon: '☰' },
     { id: 'create', label: 'Create Intent', icon: '✦' },
-    { id: 'admin', label: 'Compliance Admin', icon: '⚿' },
   ];
+
+  if (account && account.toLowerCase() === ADMIN_WALLET.toLowerCase()) {
+    navItems.push({ id: 'admin', label: 'Compliance Admin', icon: '⚿' });
+  }
 
   return (
     <aside className="w-60 bg-gray-900 border-r border-gray-800 flex flex-col h-full shrink-0">

@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useWeb3 } from '../../context/Web3Context';
+import toast from 'react-hot-toast';
 
 const mockOrders = [
   { id: '1', maker: '0x3F2...9A1B', pay: '1,000,000 USDC', receive: '285 WETH', expires: '12 blks' },
@@ -12,6 +14,28 @@ const mockOrders = [
 ];
 
 const OrderBookTable = () => {
+  const { contract, account } = useWeb3();
+  const [executingId, setExecutingId] = useState(null);
+
+  const handleExecute = async (id) => {
+    if (!account || !contract) return toast.error("Please connect wallet first");
+    
+    setExecutingId(id);
+    const toastId = toast.loading("Executing Match...");
+    
+    try {
+      const tx = await contract.executeIntent(id);
+      toast.loading("Mining...", { id: toastId });
+      await tx.wait();
+      toast.success("Trade Executed!", { id: toastId });
+    } catch (err) {
+      console.error(err);
+      toast.error("Execution failed", { id: toastId });
+    } finally {
+      setExecutingId(null);
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-gray-900">
       <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between bg-gray-900 shrink-0">
@@ -48,8 +72,12 @@ const OrderBookTable = () => {
                   </span>
                 </td>
                 <td className="px-5 py-2 text-right">
-                  <button className="px-3 py-1 bg-[#E84142] hover:bg-red-500 text-white text-xs font-bold rounded shadow-sm transition-all uppercase tracking-wide">
-                    Execute
+                  <button 
+                    onClick={() => handleExecute(order.id)}
+                    disabled={executingId === order.id}
+                    className="px-3 py-1 bg-[#E84142] hover:bg-red-500 disabled:bg-gray-700 text-white text-xs font-bold rounded shadow-sm transition-all uppercase tracking-wide"
+                  >
+                    {executingId === order.id ? 'Mining...' : 'Execute'}
                   </button>
                 </td>
               </tr>

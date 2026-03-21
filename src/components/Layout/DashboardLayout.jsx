@@ -1,7 +1,15 @@
 import React from 'react';
 import Sidebar from './Sidebar';
+import { useWeb3 } from '../../context/Web3Context';
 
 const DashboardLayout = ({ children, activeView, setActiveView }) => {
+  const { account, connectWallet } = useWeb3();
+
+  const formatAddress = (addr) => {
+    if (!addr) return '';
+    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+  };
+
   return (
     <div className="h-screen w-full flex bg-gray-950 text-gray-200 overflow-hidden font-sans">
       <Sidebar activeView={activeView} setActiveView={setActiveView} />
@@ -17,12 +25,21 @@ const DashboardLayout = ({ children, activeView, setActiveView }) => {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.6)]"></span>
-              SECURE
+              <span className={`w-1.5 h-1.5 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.6)] ${account ? 'bg-green-500' : 'bg-red-500'}`}></span>
+              {account ? 'SECURE' : 'DISCONNECTED'}
             </div>
-            <button className="px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700 text-white text-xs font-mono transition-colors border border-gray-700">
-              0x1A4...8B29
-            </button>
+            {account ? (
+              <button className="px-3 py-1.5 rounded bg-gray-800 text-white text-xs font-mono border border-gray-700 cursor-default">
+                {formatAddress(account)}
+              </button>
+            ) : (
+              <button 
+                onClick={connectWallet}
+                className="px-4 py-1.5 rounded bg-[#E84142] hover:bg-red-500 text-white text-xs font-bold transition-colors shadow-sm tracking-wide uppercase"
+              >
+                Connect Wallet
+              </button>
+            )}
           </div>
         </header>
 

@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useWeb3 } from '../../context/Web3Context';
+import toast from 'react-hot-toast';
 
 const mockInstitutions = [
   { id: '1', name: 'Wintermute Trading', address: '0x1A2B...3C4D', status: 'Active', addedOn: '2026-01-15' },
@@ -7,6 +9,31 @@ const mockInstitutions = [
 ];
 
 const ComplianceAdmin = () => {
+  const { contract, account } = useWeb3();
+  const [addressInput, setAddressInput] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleWhitelist = async () => {
+    if (!account || !contract) return toast.error("Connect wallet as admin");
+    if (!addressInput) return toast.error("Enter an address");
+
+    setLoading(true);
+    const toastId = toast.loading("Submitting verification...");
+    
+    try {
+      const tx = await contract.batchVerifyInstitutions([addressInput]);
+      toast.loading("Mining...", { id: toastId });
+      await tx.wait();
+      toast.success("Institution Whitelisted!", { id: toastId });
+      setAddressInput('');
+    } catch (err) {
+      console.error(err);
+      toast.error("Whitelist failed", { id: toastId });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-gray-900">
       {/* Whitelist Form */}
@@ -16,13 +43,19 @@ const ComplianceAdmin = () => {
           <div className="flex-1 space-y-1.5">
             <label className="text-xs font-semibold text-gray-500 uppercase">Institution Wallet Address</label>
             <input 
+              value={addressInput}
+              onChange={(e) => setAddressInput(e.target.value)}
               type="text" 
               placeholder="0x..." 
               className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-blue-500/50 font-mono"
             />
           </div>
-          <button className="px-5 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold rounded border border-gray-700 transition-colors whitespace-nowrap shadow-sm">
-            Whitelist Institution
+          <button 
+            onClick={handleWhitelist}
+            disabled={loading}
+            className="px-5 py-2 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-900 text-white text-sm font-semibold rounded border border-gray-700 transition-colors whitespace-nowrap shadow-sm"
+          >
+            {loading ? 'Mining...' : 'Whitelist Institution'}
           </button>
         </div>
       </div>
