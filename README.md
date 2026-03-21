@@ -1,5 +1,6 @@
 # 🌑 NocturneX | Institutional-Grade OTC Dark Pool
 
+![NocturneX Banner](https://placehold.co/1000x300/111827/E84142.png?text=NocturneX+|+Institutional+OTC)
 
 **NocturneX** is a secure, intent-based Over-The-Counter (OTC) Dark Pool built on **Avalanche**. It is designed specifically for TradFi institutions and large merchants (e.g., Fiserv/Clover) to execute large-volume token swaps with **zero slippage, absolute privacy, and complete MEV protection.**
 
