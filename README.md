@@ -41,8 +41,8 @@ Large merchants using Clover POS systems to accept crypto payments need a secure
 ---
 
 ## 🚀 Live Demo & Links
-- **Live Platform:** [https://nocturne-ozmbilfnt-dkyosefs-projects.vercel.app/](https://nocturne-ozmbilfnt-dkyosefs-projects.vercel.app/)
-- **Demo Video:** `https://youtu.be/EXcyD2JKNKI`
+- **Live Platform:** [https://nocturne-x.vercel.app/](https://nocturne-x.vercel.app/)
+- **Demo Video:** [https://youtu.be/EXcyD2JKNKI](https://youtu.be/EXcyD2JKNKI)
 
 ---
 
