@@ -1,5 +1,9 @@
 # 🌑 NocturneX | Institutional-Grade OTC Dark Pool
 
+🏆 **2nd Place Winner - Avalanche Track @ Aleph Hackathon (DoraHacks)** 🏆
+
+**Bridging the gap between immense TradFi liquidity and Web3 execution.**
+
 ![NocturneX Banner](https://placehold.co/1000x300/111827/E84142.png?text=NocturneX+|+Institutional+OTC)
 
 **NocturneX** is a secure, intent-based Over-The-Counter (OTC) Dark Pool built on **Avalanche**. It is designed specifically for TradFi institutions and large merchants (e.g., Fiserv/Clover) to execute large-volume token swaps with **zero slippage, absolute privacy, and complete MEV protection.**
@@ -40,9 +44,16 @@ Large merchants using Clover POS systems to accept crypto payments need a secure
 
 ---
 
+### 💡 Technical Challenges Solved
+- **ABI Mapping & State Sync:** Overcame complex frontend synchronization issues to ensure the order book accurately reflects the live smart contract state in real-time.
+- **Atomic Settlement:** Designed a robust escrow mechanism on Avalanche Fuji to guarantee that funds strictly revert if exact swap conditions (0% slippage) are not met.
+
+---
+
 ## 🚀 Live Demo & Links
 - **Live Platform:** [https://nocturne-x.vercel.app/](https://nocturne-x.vercel.app/)
 - **Demo Video:** [https://youtu.be/EXcyD2JKNKI](https://youtu.be/EXcyD2JKNKI)
+- **Hackathon Submission:** [[DoraHacks BUIDL Link]](https://dorahacks.io/buidl/41363/)
 
 ---
 
@@ -56,3 +67,9 @@ npm install
 
 # Run the local server
 npm run dev
+```
+
+### 👨‍💻 About the Developer
+Built entirely by Yosef Tamer, a Computer Science student at Benha University and a passionate Full-Stack Web3 Developer. 
+
+As a solo founder for this hackathon, Yosef architected the intent-based smart contracts, implemented the strict on-chain KYC logic, and built the fully responsive frontend. Backed by certifications in Foundry and Solidity fundamentals, and active involvement in the dev3pack DeFi bootcamp, this project showcases a deep commitment to building secure, scalable, and institutional-grade DeFi infrastructure.
